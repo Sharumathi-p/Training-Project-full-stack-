@@ -40,17 +40,26 @@ async function createFakeOrder() {
     amount: amount
   };
 
+  // Use environment variable or default to localhost
+  const API_URL = process.env.API_URL || "http://localhost:5000";
+
   try {
-    const res = await axios.post("http://localhost:5000/orders", order);
-    console.log("Created order:", res.data.product, "-", res.data.city, "- Rs" + res.data.amount);
+    const res = await axios.post(`${API_URL}/orders`, order);
+    console.log("Created order:", res.data.product, "-", res.data.city, "- ₹" + res.data.amount);
   } catch (err) {
     console.log("Error creating order:", err.message);
   }
 }
 
 async function start() {
+  const API_URL = process.env.API_URL || "http://localhost:5000";
+  console.log(`\n🚀 Nexus Order Simulator Starting...\n`);
+  console.log(`Target API: ${API_URL}`);
+  console.log(`Tip: Set API_URL environment variable to point to your deployed backend`);
+  console.log(`Example: API_URL=https://your-app.onrender.com node simulate.js\n`);
+  
   await loadRealProducts();
-  console.log("Simulator running... creating a real-product order every 4 seconds");
+  console.log("✅ Simulator running... creating a real-product order every 4 seconds\n");
   setInterval(createFakeOrder, 4000);
 }
 
