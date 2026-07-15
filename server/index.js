@@ -6,15 +6,21 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 
 const app = express();
-app.use(cors());
+
+// CORS configuration for both HTTP and Socket.io
+const corsOrigin = process.env.CORS_ORIGIN || "http://localhost:5173";
+
+app.use(cors({ origin: corsOrigin, credentials: true }));
 app.use(express.json());
 
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: "http://localhost:5173" }
+  cors: { origin: corsOrigin, credentials: true }
 });
 
-mongoose.connect(process.env.MONGO_URI)
+// MongoDB connection
+const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+mongoose.connect(mongoUri)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log("MongoDB connection error:", err));
 
@@ -45,6 +51,15 @@ setInterval(() => {
   io.emit("trending_update", top3);
 }, 3000);
 
+// Health check endpoint
+app.get("/", (req, res) => {
+  res.status(200).json({ 
+    status: "ok", 
+    message: "Nexus Dashboard Server is running",
+    timestamp: new Date().toISOString()
+  });
+});
+
 app.post("/orders", async (req, res) => {
   try {
     const { product, city, amount } = req.body;
@@ -71,6 +86,7 @@ io.on("connection", (socket) => {
   console.log("A client connected:", socket.id);
 });
 
-server.listen(5000, () => {
-  console.log("Server running on port 5000");
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
