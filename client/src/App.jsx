@@ -54,7 +54,19 @@ function App() {
 
     fetch(`${API_URL}/orders`)
       .then((res) => res.json())
-      .then((data) => setOrders(data.slice(0, 200)))
+      .then((data) => {
+        const orders = data.slice(0, 200);
+        setOrders(orders);
+        // Initialize chart data with recent orders
+        if (orders.length > 0) {
+          const recentOrders = orders.slice(0, 20).reverse();
+          const initialChartData = recentOrders.map((order) => ({
+            time: new Date(order.timestamp).toLocaleTimeString(),
+            amount: order.amount
+          }));
+          setChartData(initialChartData);
+        }
+      })
       .catch((err) => console.log("Failed to load initial orders:", err.message))
       .finally(() => setLoading(false));
   }, []);
