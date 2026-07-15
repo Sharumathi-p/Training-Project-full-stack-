@@ -13,5 +13,5 @@ services:
       - key: MONGODB_URI
         sync: false
       - key: CORS_ORIGIN
-        value: https://nexus-dashboard-client.vercel.app
+        value: https://training-project-full-stack.vercel.app
     healthCheckPath: /
