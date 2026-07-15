@@ -5,7 +5,8 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from "recharts";
 
-const socket = io("http://localhost:5000");
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const socket = io(API_URL);
 
 const COLORS = {
   bg: "#1B1B24",
@@ -51,7 +52,7 @@ function App() {
 
     socket.on("trending_update", (data) => setTrending(data));
 
-    fetch("http://localhost:5000/orders")
+    fetch(`${API_URL}/orders`)
       .then((res) => res.json())
       .then((data) => setOrders(data.slice(0, 200)))
       .catch((err) => console.log("Failed to load initial orders:", err.message))
